@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Muon Decay Animation</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            font-family: 'Arial', sans-serif;
+            color: white;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .info {
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        canvas {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 12px 30px;
+            font-size: 16px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        button:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+    <h1>Muon Decay Animation</h1>
+    <div class="info">
+        μ⁻ → e⁻ + ν̄ₑ + νμ<br>
+        (Muon → Electron + Electron Antineutrino + Muon Neutrino)
+    </div>
+    <canvas id="canvas" width="800" height="600"></canvas>
+    <button onclick="restartAnimation()">Restart Animation</button>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        let animationFrame;
+        let particles = [];
+        let time = 0;
+        const decayTime = 120; // frames until decay
+
+        class Particle {
+            constructor(x, y, vx, vy, color, label, size) {
+                this.x = x;
+                this.y = y;
+                this.vx = vx;
+                this.vy = vy;
+                this.color = color;
+                this.label = label;
+                this.size = size;
+                this.trail = [];
+                this.maxTrailLength = 30;
+            }
+
+            update() {
+                this.trail.push({x: this.x, y: this.y});
+                if (this.trail.length > this.maxTrailLength) {
+                    this.trail.shift();
+                }
+
+                this.x += this.vx;
+                this.y += this.vy;
+            }
+
+            draw() {
+                // Draw trail
+                ctx.strokeStyle = this.color;
+                ctx.lineWidth = 2;
+                ctx.globalAlpha = 0.3;
+                ctx.beginPath();
+                for (let i = 0; i < this.trail.length; i++) {
+                    const point = this.trail[i];
+                    if (i === 0) {
+                        ctx.moveTo(point.x, point.y);
+                    } else {
+                        ctx.lineTo(point.x, point.y);
+                    }
+                }
+                ctx.stroke();
+                ctx.globalAlpha = 1;
+
+                // Draw particle
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Draw glow
+                const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size * 2);
+                gradient.addColorStop(0, this.color + '80');
+                gradient.addColorStop(1, this.color + '00');
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size * 2, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Draw label
+                ctx.fillStyle = 'white';
+                ctx.font = '14px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(this.label, this.x, this.y - this.size - 10);
+            }
+        }
+
+        function init() {
+            particles = [];
+            time = 0;
+
+            // Create the muon at the center
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            particles.push(new Particle(centerX, centerY, 0, 0, '#FF00FF', 'μ⁻ (Muon)', 15));
+        }
+
+        function createDecayProducts() {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+
+            // Clear existing particles
+            particles = [];
+
+            // Create three decay products moving in different directions
+            // Electron (e⁻)
+            particles.push(new Particle(
+                centerX, centerY,
+                3, -1,
+                '#00FFFF', 'e⁻ (Electron)', 10
+            ));
+
+            // Electron antineutrino (ν̄ₑ)
+            particles.push(new Particle(
+                centerX, centerY,
+                -2, 2,
+                '#FFFF00', 'ν̄ₑ (Electron Antineutrino)', 8
+            ));
+
+            // Muon neutrino (νμ)
+            particles.push(new Particle(
+                centerX, centerY,
+                -1, -2.5,
+                '#00FF00', 'νμ (Muon Neutrino)', 8
+            ));
+        }
+
+        function drawDecayEvent() {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+
+            // Draw expanding circle for decay event
+            ctx.strokeStyle = '#FFFFFF';
+            ctx.lineWidth = 3;
+            ctx.globalAlpha = Math.max(0, 1 - (time - decayTime) / 20);
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, (time - decayTime) * 5, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.globalAlpha = 1;
+        }
+
+        function animate() {
+            // Clear canvas with fade effect
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            time++;
+
+            // Check if it's time to decay
+            if (time === decayTime) {
+                createDecayProducts();
+            }
+
+            // Draw decay event flash
+            if (time >= decayTime && time < decayTime + 20) {
+                drawDecayEvent();
+            }
+
+            // Update and draw particles
+            particles.forEach(particle => {
+                if (time >= decayTime) {
+                    particle.update();
+                }
+                particle.draw();
+            });
+
+            // Display time information
+            ctx.fillStyle = 'white';
+            ctx.font = '16px Arial';
+            ctx.textAlign = 'left';
+
+            if (time < decayTime) {
+                ctx.fillText(`Time until decay: ${((decayTime - time) / 60).toFixed(2)}s`, 20, 30);
+            } else {
+                ctx.fillText(`Time since decay: ${((time - decayTime) / 60).toFixed(2)}s`, 20, 30);
+            }
+
+            animationFrame = requestAnimationFrame(animate);
+        }
+
+        function restartAnimation() {
+            if (animationFrame) {
+                cancelAnimationFrame(animationFrame);
+            }
+            init();
+            animate();
+        }
+
+        // Start the animation
+        init();
+        animate();
+    </script>
+</body>
+</html>

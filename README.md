@@ -23,10 +23,18 @@ The animation shows:
 ### 2. Systematic LEFT Operator Analysis
 **Files:**
 - `muon-decay-LEFT.tex` - LaTeX document
-- `muon-decay-LEFT-operators.m` - FormCalc implementation
+- `muon-decay-LEFT-operators.m` - FormCalc/Mathematica script
+- `muon-decay-LEFT-operators.nb` - **Interactive Wolfram Notebook** (NEW!)
 
 #### Overview
 A complete catalog of dimension-6 LEFT operators for muon decay using the **Jenkins et al. basis** (JHEP 1711, 059 (2017)).
+
+**NEW: Interactive Notebook** - Open `muon-decay-LEFT-operators.nb` in Mathematica or Wolfram Desktop for a fully executable, step-by-step analysis with:
+- Detailed explanations of each calculation step
+- Interactive operator enumeration
+- Visualization of operator distributions
+- Physical constant definitions and constraint calculations
+- Exportable results to CSV/Excel
 
 #### Key Results
 
@@ -102,7 +110,8 @@ suess/
 ├── README.md                          # This file
 ├── muon-decay.html                    # Interactive animation
 ├── muon-decay-LEFT.tex                # Complete LaTeX document
-└── muon-decay-LEFT-operators.m        # FormCalc implementation
+├── muon-decay-LEFT-operators.m        # FormCalc script
+└── muon-decay-LEFT-operators.nb       # Interactive Wolfram Notebook
 ```
 
 ## References

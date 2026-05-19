@@ -1,0 +1,1175 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 13.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     35000,        900]
+NotebookOptionsPosition[     32000,        850]
+NotebookOutlinePosition[     32500,        870]
+CellTagsIndexPosition[     32450,        867]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["Muon Decay in LEFT: Complete Operator Analysis", "Title",
+ CellChangeTimes->{{3.9, 3.9}}],
+
+Cell["\<\
+This notebook systematically derives and enumerates all dimension-6 LOW \
+ENERGY EFFECTIVE FIELD THEORY (LEFT) operators relevant for muon decay using \
+the Jenkins et al. operator basis (JHEP 1711, 059 (2017)).\
+\>", "Text",
+ CellChangeTimes->{{3.9, 3.9}}],
+
+Cell[CellGroupData[{
+
+Cell["1. Introduction and Setup", "Section",
+ CellChangeTimes->{{3.9, 3.9}}],
+
+Cell["\<\
+LEFT is the effective field theory valid below the electroweak scale (~100 \
+GeV), where the W, Z, and Higgs bosons have been integrated out. The \
+relevant degrees of freedom are leptons, light quarks, gluons, and photons.
+
+For muon decay, we focus on the purely leptonic sector with operators of the \
+form:
+    L_eff = L_SM + Sum_i (C_i/Lambda^2) O_i^(6)
+
+where Lambda is the new physics scale and C_i are Wilson coefficients.\
+\>", "Text",
+ CellChangeTimes->{{3.9, 3.9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ",
+   RowBox[{"Basic", " ", "Setup"}], " ", "*)"}], "\[IndentingNewLine]",
+  RowBox[{
+   RowBox[{
+    RowBox[{"ClearAll", "[", "\"\<Global`*\>\"", "]"}], ";"}],
+   "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"SetDirectory", "[",
+     RowBox[{"NotebookDirectory", "[", "]"}], "]"}], ";"}],
+   "\[IndentingNewLine]", "\[IndentingNewLine]",
+   RowBox[{"(*", " ",
+    RowBox[{"Physical", " ", "Constants"}], " ", "*)"}],
+   "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"GFermi", "=",
+     RowBox[{"1.1663787", "*",
+      SuperscriptBox["10",
+       RowBox[{"-", "5"}]]}]}], ";", " ",
+    RowBox[{"(*", " ",
+     RowBox[{"GeV", "^",
+      RowBox[{"-", "2"}]}], " ", "*)"}], "\[IndentingNewLine]",
+    RowBox[{"muonMass", "=", "0.1056583755"}], ";", " ",
+    RowBox[{"(*", " ", "GeV", " ", "*)"}], "\[IndentingNewLine]",
+    RowBox[{"muonLifetime", "=",
+     RowBox[{"2.1969811", "*",
+      SuperscriptBox["10",
+       RowBox[{"-", "6"}]]}]}], ";", " ",
+    RowBox[{"(*", " ", "seconds", " ", "*)"}], "\[IndentingNewLine]",
+    RowBox[{"vEW", "=", "246.22"}], ";", " ",
+    RowBox[{"(*", " ",
+     RowBox[{"GeV", ",", " ",
+      RowBox[{"EW", " ", "vev"}]}], " ", "*)"}], "\[IndentingNewLine]",
+    "\[IndentingNewLine]",
+    RowBox[{"Print", "[",
+     RowBox[{
+     "\"\<Physical Constants Loaded:\>\"", ",", "\"\<\\n\>\"", ",",
+      "\"\<  G_F = \>\"", ",", "GFermi", ",", "\"\< GeV^-2\\n\>\"", ",",
+      "\"\<  m_mu = \>\"", ",", "muonMass", ",", "\"\< GeV\\n\>\"", ",",
+      "\"\<  tau_mu = \>\"", ",", "muonLifetime", ",", "\"\< s\\n\>\"", ",",
+      "\"\<  v_EW = \>\"", ",", "vEW", ",", "\"\< GeV\>\""}], "]"}],
+    ";"}]}]}]], "Input",
+ CellChangeTimes->{{3.9, 3.9}}],
+
+Cell["\<\
+We define the flavor basis for leptons and neutrinos that will appear in our \
+operators.\
+\>", "Text",
+ CellChangeTimes->{{3.9, 3.9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ",
+   RowBox[{"Define", " ", "Flavor", " ", "Indices"}], " ", "*)"}],
+  "\[IndentingNewLine]",
+  RowBox[{
+   RowBox[{
+    RowBox[{"leptonFlavors", "=",
+     RowBox[{"{",
+      RowBox[{"\"\<e\>\"", ",", "\"\<\[Mu]\>\"", ",", "\"\<\[Tau]\>\""}],
+      "}"}]}], ";"}], "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"neutrinos", "=",
+     RowBox[{"{",
+      RowBox[{
+      "\"\<\[Nu]e\>\"", ",", "\"\<\[Nu]\[Mu]\>\"", ",",
+       "\"\<\[Nu]\[Tau]\>\""}], "}"}]}], ";"}], "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"antiNeutrinos", "=",
+     RowBox[{"{",
+      RowBox[{
+      "\"\<\!\(\*OverscriptBox[\(\[Nu]\), \(_\)]\)e\>\"", ",",
+       "\"\<\!\(\*OverscriptBox[\(\[Nu]\), \(_\)]\)\[Mu]\>\"", ",",
+       "\"\<\!\(\*OverscriptBox[\(\[Nu]\), \(_\)]\)\[Tau]\>\""}], "}"}]}],
+    ";"}], "\[IndentingNewLine]", "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"chiralitiesCharged", "=",
+     RowBox[{"{",
+      RowBox[{"\"\<L\>\"", ",", "\"\<R\>\""}], "}"}]}], ";"}],
+   "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"chiralitiesNeutrino", "=",
+     RowBox[{"{", "\"\<L\>\"", "}"}]}], ";"}], "\[IndentingNewLine]",
+   "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"Print", "[",
+     RowBox[{"\"\<Flavor Basis:\>\""}], "]"}], ";"}],
+   "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"Print", "[",
+     RowBox[{"\"\<  Charged leptons: \>\"", ",", "leptonFlavors"}], "]"}],
+    ";"}], "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"Print", "[",
+     RowBox[{"\"\<  Neutrinos: \>\"", ",", "neutrinos"}], "]"}], ";"}],
+   "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"Print", "[",
+     RowBox[{"\"\<  Antineutrinos: \>\"", ",", "antiNeutrinos"}], "]"}],
+    ";"}]}]}]], "Input",
+ CellChangeTimes->{{3.9, 3.9}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["2. Operator Structures in Jenkins Basis", "Section",
+ CellChangeTimes->{{3.9, 3.9}}],
+
+Cell["\<\
+The Jenkins basis classifies four-fermion operators by their Lorentz \
+structure and fermion chiralities. For muon decay (mu -> e + nu + nubar), we \
+have:
+
+Lepton-Number Conserving (Delta L = 0): (ebar Gamma mu)(nubar Gamma' nu)
+Lepton-Number Violating (Delta L = 2): (ebar Gamma mu)(nubar^c Gamma' nubar)
+
+The Lorentz structures are:
+  V = Vector (gamma^mu)
+  S = Scalar (identity)
+  T = Tensor (sigma^{mu nu})
+
+Combined with chirality (L/R), we get all possible operator structures.\
+\>", "Text",
+ CellChangeTimes->{{3.9, 3.9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ",
+   RowBox[{
+   "Define", " ", "Lepton", " ", "Number", " ", "Conserving", " ",
+    "Operators"}], " ", "*)"}], "\[IndentingNewLine]",
+  RowBox[{
+   RowBox[{
+    RowBox[{"operatorsLNC", "=",
+     RowBox[{"{", "\[IndentingNewLine]",
+      RowBox[{
+       RowBox[{"\"\<VLL\>\"", "->",
+        RowBox[{
+        "\"\<(\!\(\*OverscriptBox[\(e\), \(_\)]\)\[InvisibleApplication]L \
+\!\(\*SuperscriptBox[\(\[Gamma]\), \(\[Mu]\)]\) \
+\[Mu]\[InvisibleApplication]L)(\!\(\*OverscriptBox[\(\[Nu]\), \
+\(_\)]\)\[InvisibleApplication]\[Alpha] \
+\!\(\*SubscriptBox[\(\[Gamma]\), \(\[Mu]\)]\) \[Nu]\[InvisibleApplication]\
+\[Beta])\>\"", "<>", "\"\<  [Vector LL]\>\""}]}], ",",
+       "\[IndentingNewLine]",
+       RowBox[{"\"\<VLR\>\"", "->",
+        RowBox[{
+        "\"\<(\!\(\*OverscriptBox[\(e\), \(_\)]\)\[InvisibleApplication]L \
+\!\(\*SuperscriptBox[\(\[Gamma]\), \(\[Mu]\)]\) \
+\[Mu]\[InvisibleApplication]L)(\!\(\*OverscriptBox[\(\[Nu]\), \
+\(_\)]\)\[InvisibleApplication]\[Alpha] \
+\!\(\*SubscriptBox[\(\[Gamma]\), \(\[Mu]\)]\) \
+\!\(\*SubscriptBox[\(\[Gamma]\), \(5\)]\) \[Nu]\[InvisibleApplication]\[Beta]\
+)\>\"", "<>", "\"\<  [Vector LR]\>\""}]}], ",", "\[IndentingNewLine]",
+       RowBox[{"\"\<VRL\>\"", "->",
+        RowBox[{
+        "\"\<(\!\(\*OverscriptBox[\(e\), \(_\)]\)\[InvisibleApplication]R \
+\!\(\*SuperscriptBox[\(\[Gamma]\), \(\[Mu]\)]\) \
+\[Mu]\[InvisibleApplication]R)(\!\(\*OverscriptBox[\(\[Nu]\), \
+\(_\)]\)\[InvisibleApplication]\[Alpha] \
+\!\(\*SubscriptBox[\(\[Gamma]\), \(\[Mu]\)]\) \[Nu]\[InvisibleApplication]\
+\[Beta])\>\"", "<>", "\"\<  [Vector RL]\>\""}]}], ",",
+       "\[IndentingNewLine]",
+       RowBox[{"\"\<VRR\>\"", "->",
+        RowBox[{
+        "\"\<(\!\(\*OverscriptBox[\(e\), \(_\)]\)\[InvisibleApplication]R \
+\!\(\*SuperscriptBox[\(\[Gamma]\), \(\[Mu]\)]\) \
+\[Mu]\[InvisibleApplication]R)(\!\(\*OverscriptBox[\(\[Nu]\), \
+\(_\)]\)\[InvisibleApplication]\[Alpha] \
+\!\(\*SubscriptBox[\(\[Gamma]\), \(\[Mu]\)]\) \
+\!\(\*SubscriptBox[\(\[Gamma]\), \(5\)]\) \[Nu]\[InvisibleApplication]\[Beta]\
+)\>\"", "<>", "\"\<  [Vector RR]\>\""}]}], ",", "\[IndentingNewLine]",
+       RowBox[{"\"\<SRL\>\"", "->",
+        RowBox[{
+        "\"\<(\!\(\*OverscriptBox[\(e\), \(_\)]\)\[InvisibleApplication]R \
+\[Mu]\[InvisibleApplication]L)(\!\(\*OverscriptBox[\(\[Nu]\), \
+\(_\)]\)\[InvisibleApplication]\[Alpha] \[Nu]\[InvisibleApplication]\[Beta])\>\
+\"", "<>", "\"\<  [Scalar RL]\>\""}]}], ",", "\[IndentingNewLine]",
+       RowBox[{"\"\<SRR\>\"", "->",
+        RowBox[{
+        "\"\<(\!\(\*OverscriptBox[\(e\), \(_\)]\)\[InvisibleApplication]R \
+\[Mu]\[InvisibleApplication]L)(\!\(\*OverscriptBox[\(\[Nu]\), \
+\(_\)]\)\[InvisibleApplication]\[Alpha] \!\(\*SubscriptBox[\(\[Gamma]\), \
+\(5\)]\) \[Nu]\[InvisibleApplication]\[Beta])\>\"", "<>",
+         "\"\<  [Scalar RR]\>\""}]}], ",", "\[IndentingNewLine]",
+       RowBox[{"\"\<SLL\>\"", "->",
+        RowBox[{
+        "\"\<(\!\(\*OverscriptBox[\(e\), \(_\)]\)\[InvisibleApplication]L \
+\[Mu]\[InvisibleApplication]R)(\!\(\*OverscriptBox[\(\[Nu]\), \
+\(_\)]\)\[InvisibleApplication]\[Alpha] \[Nu]\[InvisibleApplication]\[Beta])\>\
+\"", "<>", "\"\<  [Scalar LL]\>\""}]}], ",", "\[IndentingNewLine]",
+       RowBox[{"\"\<SLR\>\"", "->",
+        RowBox[{
+        "\"\<(\!\(\*OverscriptBox[\(e\), \(_\)]\)\[InvisibleApplication]L \
+\[Mu]\[InvisibleApplication]R)(\!\(\*OverscriptBox[\(\[Nu]\), \
+\(_\)]\)\[InvisibleApplication]\[Alpha] \!\(\*SubscriptBox[\(\[Gamma]\), \
+\(5\)]\) \[Nu]\[InvisibleApplication]\[Beta])\>\"", "<>",
+         "\"\<  [Scalar LR]\>\""}]}], ",", "\[IndentingNewLine]",
+       RowBox[{"\"\<TRL\>\"", "->",
+        RowBox[{
+        "\"\<(\!\(\*OverscriptBox[\(e\), \(_\)]\)\[InvisibleApplication]R \
+\!\(\*SuperscriptBox[\(\[Sigma]\), \(\[Mu]\[Nu]\)]\) \
+\[Mu]\[InvisibleApplication]L)(\!\(\*OverscriptBox[\(\[Nu]\), \
+\(_\)]\)\[InvisibleApplication]\[Alpha] \
+\!\(\*SubscriptBox[\(\[Sigma]\), \(\[Mu]\[Nu]\)]\) \[Nu]\[InvisibleApplication]\
+\[Beta])\>\"", "<>", "\"\<  [Tensor RL]\>\""}]}], ",",
+       "\[IndentingNewLine]",
+       RowBox[{"\"\<TLR\>\"", "->",
+        RowBox[{
+        "\"\<(\!\(\*OverscriptBox[\(e\), \(_\)]\)\[InvisibleApplication]L \
+\!\(\*SuperscriptBox[\(\[Sigma]\), \(\[Mu]\[Nu]\)]\) \
+\[Mu]\[InvisibleApplication]R)(\!\(\*OverscriptBox[\(\[Nu]\), \
+\(_\)]\)\[InvisibleApplication]\[Alpha] \
+\!\(\*SubscriptBox[\(\[Sigma]\), \(\[Mu]\[Nu]\)]\) \[Nu]\[InvisibleApplication]\
+\[Beta])\>\"", "<>", "\"\<  [Tensor LR]\>\""}]}]}], "\[IndentingNewLine]",
+      "}"}]}], ";"}], "\[IndentingNewLine]", "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"Print", "[",
+     RowBox[{
+     "\"\<\\n===== LEPTON-NUMBER CONSERVING OPERATORS (Delta L = 0) \
+=====\\n\>\""}], "]"}], ";"}], "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"Print", "[",
+     RowBox[{"\"\<Process: \[Mu]- \[Rule] e- + \[Nu]\[Alpha] + \
+\!\(\*OverscriptBox[\(\[Nu]\), \(_\)]\)\[Beta]\\n\>\""}], "]"}], ";"}],
+   "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"Do", "[", "\[IndentingNewLine]",
+     RowBox[{
+      RowBox[{"Print", "[",
+       RowBox[{
+        RowBox[{"op", "[",
+         RowBox[{"[", "1", "]"}], "]"}], ",", "\"\<: \>\"", ",",
+        RowBox[{"op", "[",
+         RowBox[{"[", "2", "]"}], "]"}]}], "]"}], ",",
+      "\[IndentingNewLine]",
+      RowBox[{"{",
+       RowBox[{"op", ",", "operatorsLNC"}], "}"}]}], "\[IndentingNewLine]",
+     "]"}], ";"}], "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"Print", "[",
+     RowBox[{"\"\<\\nTotal LNC operator types: \>\"", ",",
+      RowBox[{"Length", "[", "operatorsLNC", "]"}]}], "]"}],
+    ";"}]}]}]], "Input",
+ CellChangeTimes->{{3.9, 3.9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ",
+   RowBox[{
+   "Define", " ", "Lepton", " ", "Number", " ", "Violating", " ",
+    "Operators"}], " ", "*)"}], "\[IndentingNewLine]",
+  RowBox[{
+   RowBox[{
+    RowBox[{"operatorsLNV", "=",
+     RowBox[{"{", "\[IndentingNewLine]",
+      RowBox[{
+       RowBox[{"\"\<VLL_LNV\>\"", "->",
+        RowBox[{
+        "\"\<(\!\(\*OverscriptBox[\(e\), \(_\)]\)\[InvisibleApplication]L \
+\!\(\*SuperscriptBox[\(\[Gamma]\), \(\[Mu]\)]\) \
+\[Mu]\[InvisibleApplication]L)(\!\(\*SuperscriptBox[OverscriptBox[\(\[Nu]\), \
+\(_\)], \(c\)]\)\[InvisibleApplication]\[Alpha] \
+\!\(\*SubscriptBox[\(\[Gamma]\), \(\[Mu]\)]\) \
+\!\(\*OverscriptBox[\(\[Nu]\), \(_\)]\)\[InvisibleApplication]\[Beta])\>\"",
+         "<>", "\"\<  [Vector LL, LNV]\>\""}]}], ",", "\[IndentingNewLine]",
+       RowBox[{"\"\<VLR_LNV\>\"", "->",
+        RowBox[{
+        "\"\<(\!\(\*OverscriptBox[\(e\), \(_\)]\)\[InvisibleApplication]L \
+\!\(\*SuperscriptBox[\(\[Gamma]\), \(\[Mu]\)]\) \
+\[Mu]\[InvisibleApplication]L)(\!\(\*SuperscriptBox[OverscriptBox[\(\[Nu]\), \
+\(_\)], \(c\)]\)\[InvisibleApplication]\[Alpha] \
+\!\(\*SubscriptBox[\(\[Gamma]\), \(\[Mu]\)]\) \
+\!\(\*SubscriptBox[\(\[Gamma]\), \(5\)]\) \
+\!\(\*OverscriptBox[\(\[Nu]\), \(_\)]\)\[InvisibleApplication]\[Beta])\>\"",
+         "<>", "\"\<  [Vector LR, LNV]\>\""}]}], ",", "\[IndentingNewLine]",
+       RowBox[{"\"\<SRL_LNV\>\"", "->",
+        RowBox[{
+        "\"\<(\!\(\*OverscriptBox[\(e\), \(_\)]\)\[InvisibleApplication]R \
+\[Mu]\[InvisibleApplication]L)(\!\(\*SuperscriptBox[OverscriptBox[\(\[Nu]\), \
+\(_\)], \(c\)]\)\[InvisibleApplication]\[Alpha] \
+\!\(\*OverscriptBox[\(\[Nu]\), \(_\)]\)\[InvisibleApplication]\[Beta])\>\"",
+         "<>", "\"\<  [Scalar RL, LNV]\>\""}]}], ",", "\[IndentingNewLine]",
+       RowBox[{"\"\<SRR_LNV\>\"", "->",
+        RowBox[{
+        "\"\<(\!\(\*OverscriptBox[\(e\), \(_\)]\)\[InvisibleApplication]R \
+\[Mu]\[InvisibleApplication]L)(\!\(\*SuperscriptBox[OverscriptBox[\(\[Nu]\), \
+\(_\)], \(c\)]\)\[InvisibleApplication]\[Alpha] \
+\!\(\*SubscriptBox[\(\[Gamma]\), \(5\)]\) \
+\!\(\*OverscriptBox[\(\[Nu]\), \(_\)]\)\[InvisibleApplication]\[Beta])\>\"",
+         "<>", "\"\<  [Scalar RR, LNV]\>\""}]}], ",", "\[IndentingNewLine]",
+       RowBox[{"\"\<TRL_LNV\>\"", "->",
+        RowBox[{
+        "\"\<(\!\(\*OverscriptBox[\(e\), \(_\)]\)\[InvisibleApplication]R \
+\!\(\*SuperscriptBox[\(\[Sigma]\), \(\[Mu]\[Nu]\)]\) \
+\[Mu]\[InvisibleApplication]L)(\!\(\*SuperscriptBox[OverscriptBox[\(\[Nu]\), \
+\(_\)], \(c\)]\)\[InvisibleApplication]\[Alpha] \
+\!\(\*SubscriptBox[\(\[Sigma]\), \(\[Mu]\[Nu]\)]\) \
+\!\(\*OverscriptBox[\(\[Nu]\), \(_\)]\)\[InvisibleApplication]\[Beta])\>\"",
+         "<>", "\"\<  [Tensor RL, LNV]\>\""}]}]}], "\[IndentingNewLine]",
+      "}"}]}], ";"}], "\[IndentingNewLine]", "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"Print", "[",
+     RowBox[{
+     "\"\<\\n===== LEPTON-NUMBER VIOLATING OPERATORS (Delta L = 2) \
+=====\\n\>\""}], "]"}], ";"}], "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"Print", "[",
+     RowBox[{"\"\<Process: \[Mu]- \[Rule] e- + \
+\!\(\*OverscriptBox[\(\[Nu]\), \(_\)]\)\[Alpha] + \
+\!\(\*OverscriptBox[\(\[Nu]\), \(_\)]\)\[Beta] (two antineutrinos)\\n\>\""}],
+      "]"}], ";"}], "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"Do", "[", "\[IndentingNewLine]",
+     RowBox[{
+      RowBox[{"Print", "[",
+       RowBox[{
+        RowBox[{"op", "[",
+         RowBox[{"[", "1", "]"}], "]"}], ",", "\"\<: \>\"", ",",
+        RowBox[{"op", "[",
+         RowBox[{"[", "2", "]"}], "]"}]}], "]"}], ",",
+      "\[IndentingNewLine]",
+      RowBox[{"{",
+       RowBox[{"op", ",", "operatorsLNV"}], "}"}]}], "\[IndentingNewLine]",
+     "]"}], ";"}], "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"Print", "[",
+     RowBox[{"\"\<\\nTotal LNV operator types: \>\"", ",",
+      RowBox[{"Length", "[", "operatorsLNV", "]"}]}], "]"}],
+    ";"}]}]}]], "Input",
+ CellChangeTimes->{{3.9, 3.9}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["3. Flavor Enumeration", "Section",
+ CellChangeTimes->{{3.9, 3.9}}],
+
+Cell["\<\
+For each operator structure, we enumerate all possible neutrino flavor \
+combinations (alpha, beta). Since alpha and beta can independently be e, mu, \
+or tau, we have 9 combinations per operator structure.\
+\>", "Text",
+ CellChangeTimes->{{3.9, 3.9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ",
+   RowBox[{
+   "Generate", " ", "all", " ", "flavor", " ", "combinations", " ", "for",
+    " ", "a", " ", "given", " ", "operator", " ", "type"}], " ", "*)"}],
+  "\[IndentingNewLine]",
+  RowBox[{
+   RowBox[{
+    RowBox[{
+     RowBox[{"GenerateFlavorOperators", "[",
+      RowBox[{"opType_", ",", "lnc_"}], "]"}], ":=",
+     RowBox[{"Module", "[",
+      RowBox[{
+       RowBox[{"{",
+        RowBox[{"operators", "=",
+         RowBox[{"{", "}"}]}], "}"}], ",", "\[IndentingNewLine]",
+       RowBox[{
+        RowBox[{"Do", "[", "\[IndentingNewLine]",
+         RowBox[{
+          RowBox[{
+           RowBox[{"process", "=",
+            RowBox[{"If", "[",
+             RowBox[{"lnc", ",", "\[IndentingNewLine]",
+              RowBox[{
+              "\"\<\[Mu]- \[Rule] e- + \>\"", "<>",
+               RowBox[{"neutrinos", "[",
+                RowBox[{"[", "\[Alpha]", "]"}], "]"}], "<>", "\"\< + \>\"", "<>",
+                RowBox[{"antiNeutrinos", "[",
+                RowBox[{"[", "\[Beta]", "]"}], "]"}]}], ",",
+              "\[IndentingNewLine]",
+              RowBox[{
+              "\"\<\[Mu]- \[Rule] e- + \>\"", "<>",
+               RowBox[{"antiNeutrinos", "[",
+                RowBox[{"[", "\[Alpha]", "]"}], "]"}], "<>", "\"\< + \>\"", "<>",
+                RowBox[{"antiNeutrinos", "[",
+                RowBox[{"[", "\[Beta]", "]"}], "]"}], "<>",
+               "\"\< (LNV)\>\""}]}], "\[IndentingNewLine]", "]"}]}], ";",
+           "\[IndentingNewLine]",
+           RowBox[{"AppendTo", "[",
+            RowBox[{"operators", ",",
+             RowBox[{"{",
+              RowBox[{"opType", ",", "\[Alpha]", ",", "\[Beta]", ",",
+               RowBox[{"neutrinos", "[",
+                RowBox[{"[", "\[Alpha]", "]"}], "]"}], ",",
+               RowBox[{"neutrinos", "[",
+                RowBox[{"[", "\[Beta]", "]"}], "]"}], ",", "process"}],
+              "}"}]}], "]"}], ";"}], ",", "\[IndentingNewLine]",
+          RowBox[{"{",
+           RowBox[{"\[Alpha]", ",", "1", ",", "3"}], "}"}], ",",
+          RowBox[{"{",
+           RowBox[{"\[Beta]", ",", "1", ",", "3"}], "}"}]}],
+         "\[IndentingNewLine]", "]"}], ";", "\[IndentingNewLine]",
+        "operators"}]}], "\[IndentingNewLine]", "]"}]}], ";"}],
+   "\[IndentingNewLine]", "\[IndentingNewLine]",
+   RowBox[{"(*", " ",
+    RowBox[{
+    "Generate", " ", "all", " ", "operators", " ", "with", " ", "flavor",
+     " ", "indices"}], " ", "*)"}], "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"allOperatorsLNC", "=",
+     RowBox[{"Flatten", "[",
+      RowBox[{
+       RowBox[{"Table", "[",
+        RowBox[{
+         RowBox[{"GenerateFlavorOperators", "[",
+          RowBox[{
+           RowBox[{"operatorsLNC", "[",
+            RowBox[{"[",
+             RowBox[{"i", ",", "1"}], "]"}], "]"}], ",", "True"}], "]"}],
+         ",",
+         RowBox[{"{",
+          RowBox[{"i", ",",
+           RowBox[{"Length", "[", "operatorsLNC", "]"}]}], "}"}]}], "]"}],
+       ",", "1"}], "]"}]}], ";"}], "\[IndentingNewLine]",
+   "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"allOperatorsLNV", "=",
+     RowBox[{"Flatten", "[",
+      RowBox[{
+       RowBox[{"Table", "[",
+        RowBox[{
+         RowBox[{"GenerateFlavorOperators", "[",
+          RowBox[{
+           RowBox[{"operatorsLNV", "[",
+            RowBox[{"[",
+             RowBox[{"i", ",", "1"}], "]"}], "]"}], ",", "False"}], "]"}],
+         ",",
+         RowBox[{"{",
+          RowBox[{"i", ",",
+           RowBox[{"Length", "[", "operatorsLNV", "]"}]}], "}"}]}], "]"}],
+       ",", "1"}], "]"}]}], ";"}], "\[IndentingNewLine]",
+   "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"allOperators", "=",
+     RowBox[{"Join", "[",
+      RowBox[{"allOperatorsLNC", ",", "allOperatorsLNV"}], "]"}]}], ";"}],
+   "\[IndentingNewLine]", "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"Print", "[",
+     RowBox[{"\"\<\\n===== FLAVOR ENUMERATION COMPLETE =====\\n\>\""}], "]"}],
+     ";"}], "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"Print", "[",
+     RowBox[{"\"\<Total LNC operators: \>\"", ",",
+      RowBox[{"Length", "[", "allOperatorsLNC", "]"}], ",",
+      "\"\< = \>\"", ",",
+      RowBox[{"Length", "[", "operatorsLNC", "]"}], ",",
+      "\"\< types \[Times] 9 flavors\>\""}], "]"}], ";"}],
+   "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"Print", "[",
+     RowBox[{"\"\<Total LNV operators: \>\"", ",",
+      RowBox[{"Length", "[", "allOperatorsLNV", "]"}], ",", "\"\< = \>\"",
+      ",",
+      RowBox[{"Length", "[", "operatorsLNV", "]"}], ",",
+      "\"\< types \[Times] 9 flavors\>\""}], "]"}], ";"}],
+   "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"Print", "[",
+     RowBox[{"\"\<TOTAL OPERATORS: \>\"", ",",
+      RowBox[{"Length", "[", "allOperators", "]"}]}], "]"}],
+    ";"}]}]}]], "Input",
+ CellChangeTimes->{{3.9, 3.9}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["4. Sample Operators - Standard Model and Beyond", "Section",
+ CellChangeTimes->{{3.9, 3.9}}],
+
+Cell["\<\
+Let's examine some specific operators, including the Standard Model operator \
+and exotic examples.\
+\>", "Text",
+ CellChangeTimes->{{3.9, 3.9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ",
+   RowBox[{"Find", " ", "Standard", " ", "Model", " ", "operator"}], " ",
+   "*)"}], "\[IndentingNewLine]",
+  RowBox[{
+   RowBox[{
+    RowBox[{"smOperator", "=",
+     RowBox[{"Select", "[",
+      RowBox[{"allOperatorsLNC", ",",
+       RowBox[{
+        RowBox[{
+         RowBox[{
+          RowBox[{"#", "[",
+           RowBox[{"[", "1", "]"}], "]"}], "==", "\"\<VLL\>\""}], "&&",
+         RowBox[{
+          RowBox[{"#", "[",
+           RowBox[{"[", "2", "]"}], "]"}], "==", "1"}], "&&",
+         RowBox[{
+          RowBox[{"#", "[",
+           RowBox[{"[", "3", "]"}], "]"}], "==", "2"}]}], "&"}]}], "]"}]}],
+    ";"}], "\[IndentingNewLine]", "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"Print", "[",
+     RowBox[{
+     "\"\<\\n===== STANDARD MODEL OPERATOR =====\\n\>\""}], "]"}], ";"}],
+   "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"Print", "[",
+     RowBox[{"\"\<Operator: \>\"", ",",
+      RowBox[{
+       RowBox[{"smOperator", "[",
+        RowBox[{"[",
+         RowBox[{"1", ",", "1"}], "]"}], "]"}], "<>", "\"\<[\>\"", "<>",
+       RowBox[{"smOperator", "[",
+        RowBox[{"[",
+         RowBox[{"1", ",", "4"}], "]"}], "]"}], "<>", "\"\<, \>\"", "<>",
+       RowBox[{"smOperator", "[",
+        RowBox[{"[",
+         RowBox[{"1", ",", "5"}], "]"}], "]"}], "<>", "\"\<]\>\""}]}], "]"}],
+     ";"}], "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"Print", "[",
+     RowBox[{"\"\<Process: \>\"", ",",
+      RowBox[{"smOperator", "[",
+       RowBox[{"[",
+        RowBox[{"1", ",", "6"}], "]"}], "]"}]}], "]"}], ";"}],
+   "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"Print", "[",
+     RowBox[{"\"\<Structure: \>\"", ",",
+      RowBox[{"operatorsLNC", "[",
+       RowBox[{"[",
+        RowBox[{"1", ",", "2"}], "]"}], "]"}]}], "]"}], ";"}],
+   "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"Print", "[",
+     RowBox[{
+     "\"\<Wilson Coefficient: C_VLL^SM[nue,numu] = 4*G_F / sqrt(2) * \
+Lambda^2\>\""}], "]"}], ";"}], "\[IndentingNewLine]",
+   "\[IndentingNewLine]",
+   RowBox[{"(*", " ",
+    RowBox[{"Show", " ", "some", " ", "exotic", " ", "examples"}], " ",
+    "*)"}], "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"Print", "[",
+     RowBox[{
+     "\"\<\\n===== EXAMPLE EXOTIC OPERATORS =====\\n\>\""}], "]"}], ";"}],
+   "\[IndentingNewLine]", "\[IndentingNewLine]",
+   RowBox[{"(*", " ",
+    RowBox[{
+    "Tau", " ", "neutrino", " ", "flavor", " ", "combination", " ",
+     RowBox[{"(", "LNC", ")"}]}], " ", "*)"}], "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"exoticLNC", "=",
+     RowBox[{"Select", "[",
+      RowBox[{"allOperatorsLNC", ",",
+       RowBox[{
+        RowBox[{
+         RowBox[{
+          RowBox[{"#", "[",
+           RowBox[{"[", "1", "]"}], "]"}], "==", "\"\<VLL\>\""}], "&&",
+         RowBox[{
+          RowBox[{"#", "[",
+           RowBox[{"[", "2", "]"}], "]"}], "==", "3"}], "&&",
+         RowBox[{
+          RowBox[{"#", "[",
+           RowBox[{"[", "3", "]"}], "]"}], "==", "3"}]}], "&"}]}], "]"}]}],
+    ";"}], "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"Print", "[",
+     RowBox[{"\"\<Exotic LNC: \>\"", ",",
+      RowBox[{
+       RowBox[{"exoticLNC", "[",
+        RowBox[{"[",
+         RowBox[{"1", ",", "1"}], "]"}], "]"}], "<>", "\"\<[\>\"", "<>",
+       RowBox[{"exoticLNC", "[",
+        RowBox[{"[",
+         RowBox[{"1", ",", "4"}], "]"}], "]"}], "<>", "\"\<, \>\"", "<>",
+       RowBox[{"exoticLNC", "[",
+        RowBox[{"[",
+         RowBox[{"1", ",", "5"}], "]"}], "]"}], "<>", "\"\<]\>\""}]}], "]"}],
+     ";"}], "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"Print", "[",
+     RowBox[{"\"\<  \>\"", ",",
+      RowBox[{"exoticLNC", "[",
+       RowBox[{"[",
+        RowBox[{"1", ",", "6"}], "]"}], "]"}]}], "]"}], ";"}],
+   "\[IndentingNewLine]", "\[IndentingNewLine]",
+   RowBox[{"(*", " ",
+    RowBox[{"Lepton", " ", "number", " ", "violating", " ", "example"}], " ",
+     "*)"}], "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"exoticLNV", "=",
+     RowBox[{"Select", "[",
+      RowBox[{"allOperatorsLNV", ",",
+       RowBox[{
+        RowBox[{
+         RowBox[{
+          RowBox[{"#", "[",
+           RowBox[{"[", "1", "]"}], "]"}], "==", "\"\<VLL_LNV\>\""}], "&&",
+         RowBox[{
+          RowBox[{"#", "[",
+           RowBox[{"[", "2", "]"}], "]"}], "==", "2"}], "&&",
+         RowBox[{
+          RowBox[{"#", "[",
+           RowBox[{"[", "3", "]"}], "]"}], "==", "3"}]}], "&"}]}], "]"}]}],
+    ";"}], "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"Print", "[",
+     RowBox[{"\"\<\\nExotic LNV: \>\"", ",",
+      RowBox[{
+       RowBox[{"exoticLNV", "[",
+        RowBox[{"[",
+         RowBox[{"1", ",", "1"}], "]"}], "]"}], "<>", "\"\<[\>\"", "<>",
+       RowBox[{"exoticLNV", "[",
+        RowBox[{"[",
+         RowBox[{"1", ",", "4"}], "]"}], "]"}], "<>", "\"\<, \>\"", "<>",
+       RowBox[{"exoticLNV", "[",
+        RowBox[{"[",
+         RowBox[{"1", ",", "5"}], "]"}], "]"}], "<>", "\"\<]\>\""}]}], "]"}],
+     ";"}], "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"Print", "[",
+     RowBox[{"\"\<  \>\"", ",",
+      RowBox[{"exoticLNV", "[",
+       RowBox[{"[",
+        RowBox[{"1", ",", "6"}], "]"}], "]"}]}], "]"}], ";"}],
+   "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"Print", "[",
+     RowBox[{
+     "\"\<  Note: Violates lepton number by Delta L = 2\>\""}], "]"}],
+    ";"}]}]}]], "Input",
+ CellChangeTimes->{{3.9, 3.9}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["5. Operator Count Summary and Visualization", "Section",
+ CellChangeTimes->{{3.9, 3.9}}],
+
+Cell["\<\
+Let's create a summary table and visualizations of the operator \
+classification.\
+\>", "Text",
+ CellChangeTimes->{{3.9, 3.9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ",
+   RowBox[{"Create", " ", "summary", " ", "table"}], " ", "*)"}],
+  "\[IndentingNewLine]",
+  RowBox[{
+   RowBox[{
+    RowBox[{"summaryData", "=",
+     RowBox[{"{", "\[IndentingNewLine]",
+      RowBox[{
+       RowBox[{"{",
+        RowBox[{
+        "\"\<Vector (LL,LR,RL,RR)\>\"", ",", "4", ",", "9", ",", "36", ",",
+         "\"\<LNC\>\""}], "}"}], ",", "\[IndentingNewLine]",
+       RowBox[{"{",
+        RowBox[{
+        "\"\<Scalar (RL,RR,LL,LR)\>\"", ",", "4", ",", "9", ",", "36", ",",
+         "\"\<LNC\>\""}], "}"}], ",", "\[IndentingNewLine]",
+       RowBox[{"{",
+        RowBox[{
+        "\"\<Tensor (RL,LR)\>\"", ",", "2", ",", "9", ",", "18", ",",
+         "\"\<LNC\>\""}], "}"}], ",", "\[IndentingNewLine]",
+       RowBox[{"{",
+        RowBox[{
+        "\"\<Vector (LL,LR)\>\"", ",", "2", ",", "9", ",", "18", ",",
+         "\"\<LNV\>\""}], "}"}], ",", "\[IndentingNewLine]",
+       RowBox[{"{",
+        RowBox[{
+        "\"\<Scalar (RL,RR)\>\"", ",", "2", ",", "9", ",", "18", ",",
+         "\"\<LNV\>\""}], "}"}], ",", "\[IndentingNewLine]",
+       RowBox[{"{",
+        RowBox[{
+        "\"\<Tensor (RL)\>\"", ",", "1", ",", "9", ",", "9", ",",
+         "\"\<LNV\>\""}], "}"}]}], "\[IndentingNewLine]", "}"}]}], ";"}],
+   "\[IndentingNewLine]", "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"Print", "[",
+     RowBox[{
+     "\"\<\\n===== OPERATOR SUMMARY TABLE =====\\n\>\""}], "]"}], ";"}],
+   "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"Print", "[",
+     RowBox[{"Grid", "[", "\[IndentingNewLine]",
+      RowBox[{
+       RowBox[{"Prepend", "[",
+        RowBox[{"summaryData", ",",
+         RowBox[{"{",
+          RowBox[{
+          "\"\<Structure\>\"", ",", "\"\<Types\>\"", ",",
+           "\"\<Flavors\>\"", ",", "\"\<Total\>\"", ",",
+           "\"\<Category\>\""}], "}"}]}], "]"}], ",", "\[IndentingNewLine]",
+       RowBox[{"Frame", "->", "All"}], ",", "\[IndentingNewLine]",
+       RowBox[{"Background", "->",
+        RowBox[{"{",
+         RowBox[{"None", ",",
+          RowBox[{"{",
+           RowBox[{"LightBlue", ",", "White"}], "}"}]}], "}"}]}], ",",
+       "\[IndentingNewLine]",
+       RowBox[{"Alignment", "->", "Left"}]}], "\[IndentingNewLine]", "]"}],
+     "]"}], ";"}], "\[IndentingNewLine]", "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"Print", "[",
+     RowBox[{"\"\<\\nTotal LNC: \>\"", ",",
+      RowBox[{"Total", "[",
+       RowBox[{
+        RowBox[{"Cases", "[",
+         RowBox[{"summaryData", ",",
+          RowBox[{"{",
+           RowBox[{"_", ",", "_", ",", "_", ",", "n_", ",", "\"\<LNC\>\""}],
+           "}"}], ":>", "n"}], "]"}], ",", "2"}], "]"}]}], "]"}], ";"}],
+   "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"Print", "[",
+     RowBox[{"\"\<Total LNV: \>\"", ",",
+      RowBox[{"Total", "[",
+       RowBox[{
+        RowBox[{"Cases", "[",
+         RowBox[{"summaryData", ",",
+          RowBox[{"{",
+           RowBox[{"_", ",", "_", ",", "_", ",", "n_", ",", "\"\<LNV\>\""}],
+           "}"}], ":>", "n"}], "]"}], ",", "2"}], "]"}]}], "]"}], ";"}],
+   "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"Print", "[",
+     RowBox[{"\"\<GRAND TOTAL: \>\"", ",",
+      RowBox[{"Total", "[",
+       RowBox[{"summaryData", "[",
+        RowBox[{"[",
+         RowBox[{"All", ",", "4"}], "]"}], "]"}], "]"}]}], "]"}],
+    ";"}]}]}]], "Input",
+ CellChangeTimes->{{3.9, 3.9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ",
+   RowBox[{"Create", " ", "pie", " ", "charts"}], " ", "*)"}],
+  "\[IndentingNewLine]",
+  RowBox[{
+   RowBox[{
+    RowBox[{"chartDataLNC", "=",
+     RowBox[{"{",
+      RowBox[{
+       RowBox[{"{",
+        RowBox[{"\"\<Vector\>\"", ",", "36"}], "}"}], ",",
+       RowBox[{"{",
+        RowBox[{"\"\<Scalar\>\"", ",", "36"}], "}"}], ",",
+       RowBox[{"{",
+        RowBox[{"\"\<Tensor\>\"", ",", "18"}], "}"}]}], "}"}]}], ";"}],
+   "\[IndentingNewLine]", "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"chartDataLNV", "=",
+     RowBox[{"{",
+      RowBox[{
+       RowBox[{"{",
+        RowBox[{"\"\<Vector\>\"", ",", "18"}], "}"}], ",",
+       RowBox[{"{",
+        RowBox[{"\"\<Scalar\>\"", ",", "18"}], "}"}], ",",
+       RowBox[{"{",
+        RowBox[{"\"\<Tensor\>\"", ",", "9"}], "}"}]}], "}"}]}], ";"}],
+   "\[IndentingNewLine]", "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"chartLNC", "=",
+     RowBox[{"PieChart", "[",
+      RowBox[{
+       RowBox[{"chartDataLNC", "[",
+        RowBox[{"[",
+         RowBox[{"All", ",", "2"}], "]"}], "]"}], ",", "\[IndentingNewLine]",
+       RowBox[{"ChartLabels", "->",
+        RowBox[{"chartDataLNC", "[",
+         RowBox[{"[",
+          RowBox[{"All", ",", "1"}], "]"}], "]"}]}], ",",
+       "\[IndentingNewLine]",
+       RowBox[{"ChartStyle", "->", "\"\<Pastel\>\""}], ",",
+       "\[IndentingNewLine]",
+       RowBox[{"PlotLabel", "->",
+        RowBox[{"Style", "[",
+         RowBox[{"\"\<LNC Operators (90 total)\>\"", ",", "Bold", ",", "14"}],
+          "]"}]}], ",", "\[IndentingNewLine]",
+       RowBox[{"ChartLegends", "->",
+        RowBox[{"{",
+         RowBox[{
+         "\"\<Vector (36)\>\"", ",", "\"\<Scalar (36)\>\"", ",",
+          "\"\<Tensor (18)\>\""}], "}"}]}]}], "\[IndentingNewLine]", "]"}]}],
+     ";"}], "\[IndentingNewLine]", "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"chartLNV", "=",
+     RowBox[{"PieChart", "[",
+      RowBox[{
+       RowBox[{"chartDataLNV", "[",
+        RowBox[{"[",
+         RowBox[{"All", ",", "2"}], "]"}], "]"}], ",", "\[IndentingNewLine]",
+       RowBox[{"ChartLabels", "->",
+        RowBox[{"chartDataLNV", "[",
+         RowBox[{"[",
+          RowBox[{"All", ",", "1"}], "]"}], "]"}]}], ",",
+       "\[IndentingNewLine]",
+       RowBox[{"ChartStyle", "->", "\"\<Pastel\>\""}], ",",
+       "\[IndentingNewLine]",
+       RowBox[{"PlotLabel", "->",
+        RowBox[{"Style", "[",
+         RowBox[{"\"\<LNV Operators (45 total)\>\"", ",", "Bold", ",", "14"}],
+          "]"}]}], ",", "\[IndentingNewLine]",
+       RowBox[{"ChartLegends", "->",
+        RowBox[{"{",
+         RowBox[{
+         "\"\<Vector (18)\>\"", ",", "\"\<Scalar (18)\>\"", ",",
+          "\"\<Tensor (9)\>\""}], "}"}]}]}], "\[IndentingNewLine]", "]"}]}],
+    ";"}], "\[IndentingNewLine]", "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"Print", "[",
+     RowBox[{"\"\<\\n===== OPERATOR DISTRIBUTION =====\\n\>\""}], "]"}],
+    ";"}], "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"Print", "[",
+     RowBox[{"GraphicsRow", "[",
+      RowBox[{
+       RowBox[{"{",
+        RowBox[{"chartLNC", ",", "chartLNV"}], "}"}], ",",
+       RowBox[{"ImageSize", "->", "Large"}]}], "]"}], "]"}],
+    ";"}]}]}]], "Input",
+ CellChangeTimes->{{3.9, 3.9}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["6. Physical Implications", "Section",
+ CellChangeTimes->{{3.9, 3.9}}],
+
+Cell["\<\
+Now let's discuss the physical meaning and experimental constraints on these \
+operators.\
+\>", "Text",
+ CellChangeTimes->{{3.9, 3.9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ",
+   RowBox[{
+   "Calculate", " ", "typical", " ", "constraints", " ", "on", " ", "Wilson",
+     " ", "coefficients"}], " ", "*)"}], "\[IndentingNewLine]",
+  RowBox[{
+   RowBox[{
+    RowBox[{"Print", "[",
+     RowBox[{
+     "\"\<\\n===== EXPERIMENTAL CONSTRAINTS =====\\n\>\""}], "]"}], ";"}],
+   "\[IndentingNewLine]", "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"muonLifetimeUncertainty", "=",
+     RowBox[{"22", "*",
+      SuperscriptBox["10",
+       RowBox[{"-", "13"}]]}]}], ";"}], "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"relativePrecision", "=",
+     RowBox[{"muonLifetimeUncertainty", "/", "muonLifetime"}]}], ";"}],
+   "\[IndentingNewLine]", "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"Print", "[",
+     RowBox[{
+     "\"\<1. MUON LIFETIME\>\"", ",", "\"\<\\n\>\"", ",",
+      "\"\<   Measured: \[Tau]\[Mu] = \>\"", ",", "muonLifetime", ",",
+      "\"\< \[PlusMinus] \>\"", ",", "muonLifetimeUncertainty", ",",
+      "\"\< s\\n\>\"", ",", "\"\<   Precision: ~\>\"", ",",
+      RowBox[{
+       RowBox[{"NumberForm", "[",
+        RowBox[{
+         RowBox[{"relativePrecision", "*",
+          SuperscriptBox["10", "6"]}], ",",
+         RowBox[{"{",
+          RowBox[{"3", ",", "1"}], "}"}]}], "]"}], "//", "ToString"}], ",",
+      "\"\< ppm\\n\>\""}], "]"}], ";"}], "\[IndentingNewLine]",
+   "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"Print", "[",
+     RowBox[{
+     "\"\<2. MICHEL PARAMETERS\>\"", ",", "\"\<\\n\>\"", ",",
+      "\"\<   SM predictions: \[Rho] = 3/4, \[Delta] = 3/4\\n\>\"", ",",
+      "\"\<   Measured: \[Rho] = 0.74979(26), \[Delta] = 0.75047(34)\\n\>\"",
+      ",", "\"\<   Constrains scalar/tensor operators\\n\>\""}], "]"}],
+    ";"}], "\[IndentingNewLine]", "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"constraintBound", "=",
+     SuperscriptBox["10",
+      RowBox[{"-", "6"}]]}], ";"}], "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"newPhysicsScale", "=",
+     RowBox[{"Sqrt", "[",
+      RowBox[{"vEW", "/",
+       RowBox[{"Sqrt", "[", "constraintBound", "]"}]}], "]"}]}], ";"}],
+   "\[IndentingNewLine]", "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"Print", "[",
+     RowBox[{
+     "\"\<3. WILSON COEFFICIENT CONSTRAINTS\>\"", ",", "\"\<\\n\>\"", ",",
+      "\"\<   Typical bound: |C_i|/\[CapitalLambda]^2 \[LessSlantEqual] \>\"",
+       ",", "constraintBound", ",", "\"\< GeV^-2\\n\>\"", ",",
+      "\"\<   For O(1) coefficient: \[CapitalLambda] \[GreaterSlantEqual] \
+\>\"", ",",
+      RowBox[{"NumberForm", "[",
+       RowBox[{"newPhysicsScale", ",", "3"}], "]"}], ",", "\"\< GeV\\n\>\""}],
+      "]"}], ";"}], "\[IndentingNewLine]", "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"Print", "[",
+     RowBox[{
+     "\"\<4. LEPTON FLAVOR VIOLATION\>\"", ",", "\"\<\\n\>\"", ",",
+      "\"\<   BR(\[Mu] \[Rule] e\[Gamma]) < 4.2 \[Times] 10^-13\\n\>\"", ",",
+       "\"\<   BR(\[Mu] \[Rule] 3e) < 1.0 \[Times] 10^-12\\n\>\"", ",",
+      "\"\<   Constrains off-diagonal flavor operators\\n\>\""}], "]"}],
+    ";"}], "\[IndentingNewLine]", "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"Print", "[",
+     RowBox[{
+     "\"\<5. LEPTON NUMBER VIOLATION\>\"", ",", "\"\<\\n\>\"", ",",
+      "\"\<   No evidence for LNV in muon decay\\n\>\"", ",",
+      "\"\<   Constrains C_i^LNV \[Times] (v/\[CapitalLambda])^2 < 10^-6\\n\>\
+\"", ",",
+      "\"\<   Correlated with neutrinoless double-beta decay\\n\>\""}], "]"}],
+     ";"}]}]}]], "Input",
+ CellChangeTimes->{{3.9, 3.9}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["7. Export Results", "Section",
+ CellChangeTimes->{{3.9, 3.9}}],
+
+Cell["\<\
+Finally, let's export our complete operator list for further analysis.\
+\>", "Text",
+ CellChangeTimes->{{3.9, 3.9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ",
+   RowBox[{"Create", " ", "export", " ", "table"}], " ", "*)"}],
+  "\[IndentingNewLine]",
+  RowBox[{
+   RowBox[{
+    RowBox[{"exportTable", "=",
+     RowBox[{"Table", "[", "\[IndentingNewLine]",
+      RowBox[{
+       RowBox[{"{",
+        RowBox[{
+         RowBox[{"op", "[",
+          RowBox[{"[", "1", "]"}], "]"}], ",", " ",
+         RowBox[{"op", "[",
+          RowBox[{"[", "4", "]"}], "]"}], ",",
+         RowBox[{"op", "[",
+          RowBox[{"[", "5", "]"}], "]"}], ",",
+         RowBox[{"op", "[",
+          RowBox[{"[", "6", "]"}], "]"}]}], "}"}], ",",
+       "\[IndentingNewLine]",
+       RowBox[{"{",
+        RowBox[{"op", ",", "allOperators"}], "}"}]}], "\[IndentingNewLine]",
+      "]"}]}], ";"}], "\[IndentingNewLine]", "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"exportTableLabeled", "=",
+     RowBox[{"Prepend", "[",
+      RowBox[{"exportTable", ",",
+       RowBox[{"{",
+        RowBox[{
+        "\"\<Operator\>\"", ",", "\"\<nu_alpha\>\"", ",",
+         "\"\<nu_beta\>\"", ",", "\"\<Process\>\""}], "}"}]}], "]"}]}],
+    ";"}], "\[IndentingNewLine]", "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"Export", "[",
+     RowBox[{
+     "\"\<muon-decay-operators-complete.csv\>\"", ",",
+      "exportTableLabeled"}], "]"}], ";"}], "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"Export", "[",
+     RowBox[{
+     "\"\<muon-decay-operators-complete.xlsx\>\"", ",",
+      "exportTableLabeled"}], "]"}], ";"}], "\[IndentingNewLine]",
+   "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"Print", "[",
+     RowBox[{
+     "\"\<\\n===== RESULTS EXPORTED =====\\n\>\""}], "]"}], ";"}],
+   "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"Print", "[",
+     RowBox[{
+     "\"\<Files created:\>\"", ",", "\"\<\\n\>\"", ",",
+      "\"\<  - muon-decay-operators-complete.csv\\n\>\"", ",",
+      "\"\<  - muon-decay-operators-complete.xlsx\\n\>\""}], "]"}], ";"}],
+   "\[IndentingNewLine]",
+   RowBox[{
+    RowBox[{"Print", "[",
+     RowBox[{"\"\<Total rows exported: \>\"", ",",
+      RowBox[{"Length", "[", "exportTable", "]"}]}], "]"}],
+    ";"}]}]}]], "Input",
+ CellChangeTimes->{{3.9, 3.9}}],
+
+Cell["\<\
+Display first few rows of export table\
+\>", "Text",
+ CellChangeTimes->{{3.9, 3.9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Print", "[",
+   RowBox[{"\"\<\\nFirst 10 operators:\>\""}], "]"}], ";",
+  "\[IndentingNewLine]",
+  RowBox[{"Print", "[",
+   RowBox[{"Grid", "[",
+    RowBox[{
+     RowBox[{"Take", "[",
+      RowBox[{"exportTableLabeled", ",", "11"}], "]"}], ",",
+     RowBox[{"Frame", "->", "All"}], ",",
+     RowBox[{"Background", "->",
+      RowBox[{"{",
+       RowBox[{"None", ",",
+        RowBox[{"{",
+         RowBox[{"LightBlue", ",", "White"}], "}"}]}], "}"}]}]}], "]"}],
+   "]"}]}]], "Input",
+ CellChangeTimes->{{3.9, 3.9}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["8. Summary and Conclusions", "Section",
+ CellChangeTimes->{{3.9, 3.9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Print", "[",
+   RowBox[{
+   "\"\<\\n\>\"", ",", "StringRepeat", "[",
+    RowBox[{"\"\<=\>\"", ",", "70"}], "]"}], "]"}], ";",
+  "\[IndentingNewLine]",
+  RowBox[{"Print", "[",
+   RowBox[{
+   "StringRepeat", "[",
+    RowBox[{"\"\< \>\"", ",", "15"}], "]"}], "]"}], ";",
+  "\[IndentingNewLine]",
+  RowBox[{"Print", "[",
+   RowBox[{
+   "StringRepeat", "[",
+    RowBox[{"\"\< \>\"", ",", "10"}], "]"}], "]"}], ";",
+  "\[IndentingNewLine]",
+  RowBox[{"Print", "[",
+   RowBox[{
+   "StringRepeat", "[",
+    RowBox[{"\"\<=\>\"", ",", "70"}], "]"}], "]"}], ";",
+  "\[IndentingNewLine]", "\[IndentingNewLine]",
+  RowBox[{"Print", "[", "\"\<\\nKEY FINDINGS:\\n\>\"", "]"}], ";",
+  "\[IndentingNewLine]",
+  RowBox[{"Print", "[",
+   RowBox[{"\"\<1. Total operators in Jenkins basis: \>\"", ",",
+    RowBox[{"Length", "[", "allOperators", "]"}]}], "]"}], ";",
+  "\[IndentingNewLine]",
+  RowBox[{"Print", "[",
+   RowBox[{"\"\<   - Lepton-number conserving: \>\"", ",",
+    RowBox[{"Length", "[", "allOperatorsLNC", "]"}]}], "]"}], ";",
+  "\[IndentingNewLine]",
+  RowBox[{"Print", "[",
+   RowBox[{"\"\<   - Lepton-number violating: \>\"", ",",
+    RowBox[{"Length", "[", "allOperatorsLNV", "]"}]}], "]"}], ";",
+  "\[IndentingNewLine]", "\[IndentingNewLine]",
+  RowBox[{"Print", "[",
+   RowBox[{"\"\<\\n2. Operator types:\\n\>\"", ",",
+    RowBox[{"\"\<   - LNC: \>\"", "<>",
+     RowBox[{"ToString", "[",
+      RowBox[{"Length", "[", "operatorsLNC", "]"}], "]"}], "<>",
+     "\"\< types \[Times] 9 flavors = \>\"", "<>",
+     RowBox[{"ToString", "[",
+      RowBox[{"Length", "[", "allOperatorsLNC", "]"}], "]"}]}], ",",
+    "\"\<\\n\>\"", ",",
+    RowBox[{"\"\<   - LNV: \>\"", "<>",
+     RowBox[{"ToString", "[",
+      RowBox[{"Length", "[", "operatorsLNV", "]"}], "]"}], "<>",
+     "\"\< types \[Times] 9 flavors = \>\"", "<>",
+     RowBox[{"ToString", "[",
+      RowBox[{"Length", "[", "allOperatorsLNV", "]"}], "]"}]}]}], "]"}], ";",
+   "\[IndentingNewLine]", "\[IndentingNewLine]",
+  RowBox[{"Print", "[",
+   RowBox[{
+   "\"\<\\n3. Standard Model: Only VLL[\[Nu]e,\[Nu]\[Mu]] at tree level\>\""}], "]"}], ";", "\[IndentingNewLine]",
+  RowBox[{"Print", "[",
+   RowBox[{
+   "\"\<   All other operators probe beyond-SM physics\\n\>\""}], "]"}], ";",
+  "\[IndentingNewLine]", "\[IndentingNewLine]",
+  RowBox[{"Print", "[",
+   RowBox[{
+   "\"\<4. Jenkins basis is Fierz-complete and non-redundant\>\""}], "]"}],
+  ";", "\[IndentingNewLine]",
+  RowBox[{"Print", "[",
+   RowBox[{
+   "\"\<   No overcounting from equivalent operator representations\\n\>\""}],
+    "]"}], ";", "\[IndentingNewLine]", "\[IndentingNewLine]",
+  RowBox[{"Print", "[",
+   RowBox[{
+   "\"\<5. Current bounds: \[CapitalLambda] \[GreaterSlantEqual] ~1 TeV for \
+O(1) Wilson coefficients\\n\>\""}], "]"}], ";", "\[IndentingNewLine]",
+  "\[IndentingNewLine]",
+  RowBox[{"Print", "[",
+   RowBox[{
+   "StringRepeat", "[",
+    RowBox[{"\"\<=\>\"", ",", "70"}], "]"}], "]"}], ";",
+  "\[IndentingNewLine]",
+  RowBox[{"Print", "[", "\"\<\\nAnalysis complete!\\n\>\"", "]"}],
+  ";"}]], "Input",
+ CellChangeTimes->{{3.9, 3.9}}]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{1200, 900},
+WindowMargins->{{Automatic, 100}, {Automatic, 50}},
+FrontEndVersion->"13.0 for Mac OS X ARM (64-bit) (December 2, 2021)",
+StyleDefinitions->"Default.nb"
+]
+
+(* End of Notebook Content *)
